@@ -1,3 +1,4 @@
-proved 14
+# Re-based 2026-11-12 (proved 14 -> 12): two claims had been written twice and the gate counted both; the duplicates are removed (vbm-land #7: the gate should refuse a duplicate slug).
+proved 12
 open 0
-total 15
+total 13
