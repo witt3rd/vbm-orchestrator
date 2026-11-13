@@ -48,6 +48,7 @@ def onValidated (cfg : Config) (s : State) (r : Nat) (d : Delivery) (v : Validat
   | .failed rep, _ => ask s r (.checks rep)
   | .conflict rep, _ => ask s r (.conflict rep)
   | .refused, _ => close s (some (blockedOut .protectedPath "the change touches a path the lander protects"))
+  | .unavailable why, _ => close s (some (blockedOut .runFailed (orElse why "the lander could not validate")))
 
 /-- Every reviewer answered. -/
 def onReviewed (s : State) (r : Nat) (d : Delivery) (c : String) (answers : List ReviewAnswer) : State × List Action :=

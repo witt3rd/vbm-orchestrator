@@ -26,7 +26,7 @@ Every action asks one port; the event that follows answers it:
 | `prepare` | the workspace | `preparedOk` or `preparedFailed` |
 | `runAgent` (round, `first` or `resume` with the whole feedback) | the worker agent | `agentFinished` (its typed outcome, the commit it made or null, the cost) |
 | `askJudge` | the decision model | `judged` (`progressing`, `stuck` or `unavailable`) |
-| `validate` | the lander's validate step | `validated` (`passed` with the rebased commit, `failed`, `conflict`, `refused`) |
+| `validate` | the lander's validate step | `validated` (`passed` with the rebased commit, `failed`, `conflict`, `refused`, or `unavailable` with the reason: the lander could not validate for a reason that is not the task's) |
 | `review` | the reviewers (read-only, given the diff up front) | `reviewed` (one answer per reviewer: its findings, or undecodable) |
 | `push` | the lander's push step | `pushed` (`landed` with the sha, `baseMoved`, `refused`) |
 | `cleanup` | the workspace | `cleaned` |
@@ -38,7 +38,7 @@ Two events are not answers: `leaseLost` (the task now belongs to another host) a
 
 ## What each scenario shows
 
-Success with and without reviewers; a repair after red checks, after a conflict and after a reviewer's finding (the SAME session continues with the whole feedback, round 2); two repairs; the Judge stopping a task (it closes as the kind of its last failure, with the failure whole) and an unreachable Judge read as stuck; an unreachable reviewer (nothing lands, nothing is repaired); the worker's own `blocked` and `needsClarification` passed through; a worker that says done and changed nothing; a refused protected path; the money ceiling at the first round and inside a repair; the deadline; a lost lease (it cleans up and reports nothing); a workspace that could not be prepared; a push the remote refuses; a moved base re-validated twice, and a moved base whose re-validation fails and is repaired.
+Success with and without reviewers; a repair after red checks, after a conflict and after a reviewer's finding (the SAME session continues with the whole feedback, round 2); two repairs; the Judge stopping a task (it closes as the kind of its last failure, with the failure whole) and an unreachable Judge read as stuck; an unreachable reviewer (nothing lands, nothing is repaired); the worker's own `blocked` and `needsClarification` passed through; a worker that says done and changed nothing; a refused protected path; a lander that could not validate at all (held, the base kept moving, a fetch failed); the money ceiling at the first round and inside a repair; the deadline; a lost lease (it cleans up and reports nothing); a workspace that could not be prepared; a push the remote refuses; a moved base re-validated twice, and a moved base whose re-validation fails and is repaired.
 
 ## Reading and writing them
 
