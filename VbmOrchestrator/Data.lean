@@ -52,7 +52,9 @@ inductive ValidateResult where
   | failed (report : String)
   | conflict (report : String)
   | refused
-  /-- The lander could not validate, for a reason that is not the task's (landing is held, the base kept moving, the base could not be fetched, a step timed out): the task closes as `runFailed` with the reason whole. -/
+  /-- The base moved faster than the lander could validate (it ran out of attempts, nothing was judged wrong with the change): validate the SAME commit again. There is no cap: the deadline and the fuse are the stops. -/
+  | moved
+  /-- The lander could not validate, for a reason that is not the task's (landing is held, the base could not be fetched, a step timed out): the task closes as `runFailed` with the reason whole. -/
   | unavailable (why : String)
   deriving DecidableEq, Repr
 

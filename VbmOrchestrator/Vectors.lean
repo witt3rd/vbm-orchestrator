@@ -50,6 +50,7 @@ def scenarios : List Scenario := [
   ⟨"lease-lost-before-the-worker-answers", cfg0, [.preparedOk, .leaseLost, .cleaned]⟩,
   ⟨"workspace-could-not-be-prepared", cfg0, [.preparedFailed "disk full", .cleaned]⟩,
   ⟨"push-refused-by-the-remote", cfg0, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .pushed (.refused "protected branch"), .cleaned]⟩,
+  ⟨"validation-moved-twice-then-lands", cfg0, [.preparedOk, work "c1" 3, .validated .moved, .validated .moved, .validated (.passed "r1"), .pushed (.landed "sha1"), .cleaned]⟩,
   ⟨"base-moved-twice-then-lands", cfg0, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .pushed .baseMoved, .validated (.passed "r2"), .pushed .baseMoved, .validated (.passed "r3"), .pushed (.landed "sha3"), .cleaned]⟩,
   ⟨"base-moved-then-the-checks-fail-and-are-repaired", cfg0, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .pushed .baseMoved, .validated (.failed "red on the new base"), .judged .progressing, work "c2" 2, .validated (.passed "r2"), .pushed (.landed "sha2"), .cleaned]⟩
 ]

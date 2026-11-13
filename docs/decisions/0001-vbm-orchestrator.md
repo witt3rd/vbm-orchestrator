@@ -1,6 +1,6 @@
 # 0001: vbm-orchestrator: the task cycle as a pure state machine
 
-Status: accepted 2026-11-12. The machine and its proofs (S1); non-interference (S2); the reference model and the conformance vectors (S3). Complete as a specification. S5 (v0.7.0): the lander can answer that it could not validate at all (`unavailable`: held, the base kept moving, a fetch failed, a step timed out), which closes the task as `runFailed` with the reason whole; before, an interpreter had no honest answer for it. S4: the wire, JSON both ways, for an interpreter and the vectors (`VbmOrchestratorWire`, a binding).
+Status: accepted 2026-11-12. The machine and its proofs (S1); non-interference (S2); the reference model and the conformance vectors (S3). Complete as a specification. S6 (v0.8.0): the lander can answer that the base moved faster than it could validate (`moved`, its exit 16: nothing was judged wrong): the machine validates the same commit again, with no cap (the deadline and the fuse are the stops), as it already does when a push finds the base moved. Found when two real tasks were reported blocked on it. S5 (v0.7.0): the lander can answer that it could not validate at all (`unavailable`: held, the base kept moving, a fetch failed, a step timed out), which closes the task as `runFailed` with the reason whole; before, an interpreter had no honest answer for it. S4: the wire, JSON both ways, for an interpreter and the vectors (`VbmOrchestratorWire`, a binding).
 
 ## What it is
 
