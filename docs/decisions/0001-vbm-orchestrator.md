@@ -1,6 +1,6 @@
 # 0001: vbm-orchestrator: the task cycle as a pure state machine
 
-Status: accepted 2026-11-12. The machine and its first proofs (S1); the reference model and the conformance vectors follow (S2).
+Status: accepted 2026-11-12. The machine and its first proofs (S1); non-interference, the reference model and the conformance vectors follow (S2).
 
 ## What it is
 
@@ -19,14 +19,18 @@ the wall deadline as `timeout`.
 ## What is proved (`VbmOrchestratorProofs`; one row per claim in `docs/proof-ledger.md`)
 
 1. Closed is absorbing: nothing is done after it.
-2. A report is asked for only when closing finishes, and the abandoned run reports nothing.
-3. Cleanup is asked for exactly when a task enters closing, and a task enters it once.
-4. A push is asked for only after the lander validated the commit, and after every reviewer answered and none found a defect.
-5. The worker is asked to run again, in the same session, with the whole feedback, only after the Judge said `progressing` and while the money is below the fuse; its first run is round 1.
-6. A reviewer that could not be reached never lets the task land or repair.
-7. Control never depends on prose: erasing every text of an event changes neither the next phase nor the kinds of the actions.
+2. A task reports at most once, only when its closing finishes; an abandoned task (a lost lease) reports nothing.
+3. A task asks for its cleanup exactly once on every path (including a failed preparation and an abandoned run), and when it finishes it has asked.
+4. A push is asked for only after the lander validated the commit, and after every reviewer answered and none found a defect (or there are no reviewers).
+5. A task lands only a done-type outcome: the worker said it was done.
+6. The worker's first run is round 1; it runs again, in the same session with the whole feedback, only after the Judge said `progressing` and while the money is below the fuse.
+7. A reviewer that could not be reached never lets the task land or repair: it closes as `unableToReview`.
+8. The deadline and a lost lease always close a task that had not finished, asking for the cleanup.
+9. **The worker runs at most `fuse` times, whatever the Judge answers**, given every round costs at least a picodollar: no count of rounds ends a task, the money does.
 
-Each conditional theorem has a witness that its hypothesis can hold.
+The witnesses (`VbmOrchestratorProofs/Witnesses.lean`) are whole runs, computed: a full success, a repair the Judge allows, a task it stops, an unreachable judge read as `stuck`, the money ceiling, an unreachable reviewer, a lost lease, a moved base re-validated. They show each hypothesis can hold.
+
+**Not yet proved (the next slice):** non-interference, that control never depends on prose: two states and two events with the same typed shape (the same constructors, kinds, counts and numbers, whatever their texts) give results of the same shape. It is stated as an open claim in the ledger, not claimed.
 
 ## What is not decided here
 

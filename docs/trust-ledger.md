@@ -21,3 +21,13 @@ Entry format: **What** it is; **Enters** where it enters; **Assumes** what we as
 - **Owner:** the owner
 - **Plan:** accept because they are the host's own tools and nothing from them executes in an artifact.
 - **Covers:** `tool:git` `tool:lake` `tool:mise` `tool:python3`
+
+### T3. vbm-work: the vocabulary of work, a pinned library
+- **What:** the library `vbm-work` (https://github.com/witt3rd/vbm-work), vendored at a signed release (`vendor/vbm-work/`, locked in `.land/pins.lock`): the typed outcome, the review words and the task this machine's data is built from. No C.
+- **Enters:** `.land/pins.lock`, `lakefile.lean` (the `require`), `vendor/vbm-work/`; `VbmOrchestrator/Data.lean` imports it.
+- **Assumes:** the library's own proofs and independent re-check; this repository does **not** re-prove them: the gate checks that the bytes are the bytes of the signed release (`land-pin verify`: the tree hash), never that they were proved; no written contract beyond the library's own ledger.
+- **Test:** `scripts/tier1.sh` runs `land-pin verify` first (an edited, added or deleted file, an unlocked library or a second copy of one fails it).
+- **Owner:** the owner (the lock is `.land/pins.lock`); upstream vbm-work is the same owner's.
+- **Plan:** verify. Re-check the library's proof modules here so the recheck is ours rather than the library's; until then the pin is a trusted-by-hash claim and says so.
+- **Covers:** `pin:vbm-work`
+

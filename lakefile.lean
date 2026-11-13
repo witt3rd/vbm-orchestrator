@@ -4,6 +4,9 @@ open System Lake DSL
 package «vbm-orchestrator» where
   leanOptions := #[⟨`warningAsError, true⟩, ⟨`autoImplicit, false⟩]
 
+/-- The vocabulary of work (the typed outcome, the review words, the task): the one dependency, vendored at a signed release. -/
+require «vbm-work» from "vendor/vbm-work"
+
 /-- The library: specification and code, one Lean core. Imports `Init` and itself only (checked by Tier 1). No dependency. -/
 @[default_target]
 lean_lib VbmOrchestrator where

@@ -28,12 +28,12 @@
 
 # AGENTS.md: vbm-orchestrator
 
-The vocabulary of work, written once in Lean 4 and machine-checked: a task goes in, a typed outcome comes out, and a review returns typed findings. The four ways a run ends, the nineteen kinds of block (one word each, a word naming at most one, a word that names none refused), what makes an outcome well formed, what a reviewer may return, and what a round's review comes to.
+The task cycle as a pure state machine, written once in Lean 4 and machine-checked: prepare a workspace, run a worker agent, validate with the lander's checks, review, land, clean up; criticism returns whole to the same worker session after a decision model has judged the task still converging; the money ceiling and a wall deadline are the only hard stops.
 
-**Scope.** Pure data and total functions over `Init`. No input or output, no wire format, no model call, no network, no storage, no dependency. It decides nothing about what a machine does next: reading a reply into findings or writing an outcome as JSON belongs to the application that binds it.
+**Scope.** Pure data and total functions over `Init` and the vocabulary package `VbmWork`. No input or output, no clock, no model call, no network, no storage. What is proved is what any interpreter that meets the ports' laws may rely on; the ports' implementations are the application's.
 
 ## Status
-Slices (docs/decisions/0001-vbm-orchestrator.md): S1 landed: the outcome vocabulary and the review words, each theorem with a non-vacuity witness. Planned: the task (when the orchestrator's input contract is specified) and one list of the kinds of block.
+Slices (docs/decisions/0001-vbm-orchestrator.md): S1: the data, the machine and its proofs (reports once, cleans once, lands only done, the worker runs at most `fuse` times). Planned: S2 non-interference (control never reads prose), the reference model and the conformance vectors.
 
 ## Hard rules
 - **Forbidden anywhere in Lean:** `sorry`, `admit`, `axiom`, `unsafe`, `implemented_by`, `csimp` (Tier 1 scans for them; a comment may mention one only on a line marked `tier1-allow`). A proof is hard? Decompose it; never weaken the statement.
@@ -46,8 +46,9 @@ Slices (docs/decisions/0001-vbm-orchestrator.md): S1 landed: the outcome vocabul
 - **No secrets in the repository.** No paid model call and no network call from a test or a gate.
 
 ## Library rules
-- **Module roots:** `VbmOrchestrator` imports `Init` and itself only (Tier 1 scans the imports); `VbmOrchestratorProofs` may import `Std` and `Lean` and is never linked, and nothing in `VbmOrchestrator` may import it.
-- **The words are kept.** The tag and kind words are the words an existing journal already holds; a change to one is a change to that journal and needs the consumer's word.
+- **Module roots:** `VbmOrchestrator` imports `Init`, the pinned `VbmWork` and itself only (Tier 1 scans the imports); `VbmOrchestratorProofs` may import `Std` and `Lean` and is never linked, and nothing in `VbmOrchestrator` may import it.
+- **No cap, no heuristic.** A number that stands in for understanding does not belong in the machine: progress is the Judge's, the fuse is the money's, the deadline is time's. Nothing in it reads prose: control depends on typed data only (a theorem says so).
+- **A vendored library is never patched** (`land-pin verify`); change `vbm-work` upstream, then bump the pin.
 
 ## Gates
 **Tier 1** (`scripts/tier1.sh`): forbidden-constructs scan, import scan, pipefail lint, the vendored lander's drift check, zero-warning build, axiom gate, public-readiness lint, ran-evidence self-tests. It runs before every landing, on the commit rebased onto main; nothing runs after the push. If main is ever red, whoever sees it reverts the offending commit with `git revert` and lands the revert; the author fixes forward in a new worktree.

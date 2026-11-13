@@ -27,14 +27,14 @@ echo "-- a comment that says sorry -- tier1-allow" > "$st"; [ -z "$(forbidden "$
 echo "-- a comment that says sorry" > "$st"; [ -n "$(forbidden "$st")" ] || { echo "tier1: an unmarked comment is not flagged" >&2; exit 1; }
 echo "tier1: forbidden-constructs scan: negative self-tests ok (each forbidden word is flagged, the tier1-allow marker is honoured)"
 
-# 1a. VbmOrchestrator/ imports Init (implicitly) and other VbmOrchestrator modules only: no Std, no Lean, no VbmOrchestratorProofs, no `prelude`.
-bad_imports() { grep -HnE '^[[:space:]]*((public|meta|private)[[:space:]]+)*(import|prelude)\b' "$@" | grep -vE ':[0-9]+:import VbmOrchestrator(\.[A-Za-z0-9_]+)*[[:space:]]*$' || true; }
+# 1a. VbmOrchestrator/ imports Init (implicitly), the pinned VbmWork and other VbmOrchestrator modules: no Std, no Lean, no VbmOrchestratorProofs, no `prelude`, nothing else.
+bad_imports() { grep -HnE '^[[:space:]]*((public|meta|private)[[:space:]]+)*(import|prelude)\b' "$@" | grep -vE ':[0-9]+:import (VbmOrchestrator|VbmWork)(\.[A-Za-z0-9_]+)*[[:space:]]*$' || true; }
 bad=$(bad_imports $(find VbmOrchestrator -name '*.lean') VbmOrchestrator.lean)
 if [ -n "$bad" ]; then echo "tier1: VbmOrchestrator may import only VbmOrchestrator modules (Init is implicit):" >&2; echo "$bad" >&2; exit 1; fi
 for imp in 'import Lean' 'import Std.Data.HashMap' 'import VbmOrchestratorProofs.State' 'prelude' 'public import Lean.Data.Json' 'import VbmOrchestratorX'; do
   printf '%s\n' "$imp" > "$st"; [ -n "$(bad_imports "$st")" ] || { echo "tier1: the import scan does not flag: $imp" >&2; exit 1; }
 done
-printf 'import VbmOrchestrator.State\n' > "$st"; [ -z "$(bad_imports "$st")" ] || { echo "tier1: the import scan flags an allowed import" >&2; exit 1; }
+printf 'import VbmWork.Outcome\nimport VbmOrchestrator.Step\n' > "$st"; [ -z "$(bad_imports "$st")" ] || { echo "tier1: the import scan flags an allowed import" >&2; exit 1; }
 echo "tier1: import scan: negative self-tests ok (each import outside Init and VbmOrchestrator is flagged)"
 
 scripts/lint-pipefail.sh   # a producer piped into an early-exiting consumer is flaky by construction; the lint has a negative self-test
