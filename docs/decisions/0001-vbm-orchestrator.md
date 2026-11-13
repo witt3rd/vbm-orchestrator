@@ -28,9 +28,11 @@ the wall deadline as `timeout`.
 8. The deadline and a lost lease always close a task that had not finished, asking for the cleanup.
 9. **The worker runs at most `fuse` times, whatever the Judge answers**, given every round costs at least a picodollar: no count of rounds ends a task, the money does.
 
-The witnesses (`VbmOrchestratorProofs/Witnesses.lean`) are whole runs, computed: a full success, a repair the Judge allows, a task it stops, an unreachable judge read as `stuck`, the money ceiling, an unreachable reviewer, a lost lease, a moved base re-validated. They show each hypothesis can hold.
+The witnesses (`VbmOrchestratorProofs/Witnesses.lean`, and the last example of `Shape.lean`: two runs whose events differ in every text) are whole runs, computed: a full success, a repair the Judge allows, a task it stops, an unreachable judge read as `stuck`, the money ceiling, an unreachable reviewer, a lost lease, a moved base re-validated. They show each hypothesis can hold.
 
-**Not yet proved (the next slice):** non-interference, that control never depends on prose: two states and two events with the same typed shape (the same constructors, kinds, counts and numbers, whatever their texts) give results of the same shape. It is stated as an open claim in the ledger, not claimed.
+10. **Control never depends on prose (non-interference)**: two states and two events with the same typed shape (the same constructors, kinds of block, counts and numbers, whatever their texts) give results of the same shape; so two runs over events of the same shape ask for the same actions, up to their texts, and end in the same phase. The machine copies text, it never reads it.
+
+**Not yet:** the reference model and the conformance vectors.
 
 ## What is not decided here
 
