@@ -40,6 +40,10 @@ Two events are not answers: `leaseLost` (the task now belongs to another host) a
 
 Success with and without reviewers; a repair after red checks, after a conflict and after a reviewer's finding (the SAME session continues with the whole feedback, round 2); two repairs; the Judge stopping a task (it closes as the kind of its last failure, with the failure whole) and an unreachable Judge read as stuck; an unreachable reviewer (nothing lands, nothing is repaired); the worker's own `blocked` and `needsClarification` passed through; a worker that says done and changed nothing; a refused protected path; the money ceiling at the first round and inside a repair; the deadline; a lost lease (it cleans up and reports nothing); a workspace that could not be prepared; a push the remote refuses; a moved base re-validated twice, and a moved base whose re-validation fails and is repaired.
 
+## Reading and writing them
+
+The wire library (`VbmOrchestratorWire`, a binding that may import `Lean`) encodes and decodes every event and action; a decoder never repairs or guesses (a word that names no event, no kind, no severity is an error). The vectors are its conformance test: `vbm-orchestrator-vectors --roundtrip FILE` decodes every line and encodes it back, and it must equal the line.
+
 ## Stability
 
 The `-1` names this format. A change to the machine or to a scenario changes the file, `scripts/test_vectors.sh` fails until the file is regenerated with `--write`, and the diff is the review. A change that alters the meaning of an existing line is a new format version, not an edit.

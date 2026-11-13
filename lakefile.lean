@@ -19,6 +19,10 @@ lean_lib VbmOrchestratorProofs where
 /-- The landing tool's Lean modules (the obligation-ledger vocabulary and the reach walk, `land-lean ledger`), a small package it ships; required, never declared here, so a repository that vendors this library and requires it too shares one copy. -/
 require «land-ledger» from ".land/tool/lean"
 
+/-- The wire: JSON for the machine's data, both ways. A BINDING (it may import `Lean`; nothing in `VbmOrchestrator` imports it): the vectors and an interpreter's own records use it. -/
+lean_lib VbmOrchestratorWire where
+  globs := #[.one `VbmOrchestratorWire]
+
 /-- The vector generator (`vbm-orchestrator-vectors-1`): the scenarios and the machine's answers come from the Lean reference only; this executable only writes them. Not part of the library. -/
 lean_exe «vbm-orchestrator-vectors» where
   srcDir := "vectors"

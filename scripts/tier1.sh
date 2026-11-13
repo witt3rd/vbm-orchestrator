@@ -13,7 +13,7 @@ tests=(); par() { tests+=("$@"); }   # independent test scripts, run in parallel
 bgdir=$(mktemp -d); bgnames=()
 bg() { local n=$1; shift; bgnames+=("$n"); ( "$@" ) > "$bgdir/$n.log" 2>&1 & echo $! > "$bgdir/$n.pid"; }
 bgwait() { local bad=0 n; for n in "${bgnames[@]}"; do if wait "$(cat "$bgdir/$n.pid")"; then cat "$bgdir/$n.log"; else echo "tier1: FAILED: $n" >&2; cat "$bgdir/$n.log" >&2; bad=1; fi; done; [ $bad = 0 ] || exit 1; }
-lean_sources() { find VbmOrchestrator VbmOrchestratorProofs vectors -name '*.lean' 2>/dev/null; ls VbmOrchestrator.lean VbmOrchestratorProofs.lean 2>/dev/null; }
+lean_sources() { find VbmOrchestrator VbmOrchestratorProofs vectors -name '*.lean' 2>/dev/null; ls VbmOrchestrator.lean VbmOrchestratorProofs.lean VbmOrchestratorWire.lean 2>/dev/null; }
 
 # 1. Forbidden constructs anywhere in Lean sources (AGENTS.md). A comment may mention one only on a line marked `-- tier1-allow`.
 forbidden() { grep -HnE '\b(sorry|admit|axiom|unsafe|implemented_by|csimp)\b' "$@" | grep -v 'tier1-allow' || true; }
@@ -42,7 +42,7 @@ scripts/lint-pipefail.sh   # a producer piped into an early-exiting consumer is 
 
 # 2. Build, zero warnings (scripts/check-zero-warning.sh: the warning's own diagnostic is required, a clean file must pass; prints `ran: zero-warning: 3 cases`).
 scripts/check-zero-warning.sh
-lake build VbmOrchestrator VbmOrchestratorProofs LandLedger vbm-orchestrator-vectors   # once, for the gates and every test (they build nothing more)
+lake build VbmOrchestrator VbmOrchestratorProofs VbmOrchestratorWire LandLedger vbm-orchestrator-vectors   # once, for the gates and every test (they build nothing more)
 
 # 2a. The axiom gate: every constant of ours depends only on propext, Classical.choice, Quot.sound (--selftest: a non-standard axiom is rejected).
 bg axiom-gate .land/tool/bin/land-lean axiom --selftest

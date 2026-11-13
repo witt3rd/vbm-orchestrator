@@ -1,6 +1,6 @@
 # 0001: vbm-orchestrator: the task cycle as a pure state machine
 
-Status: accepted 2026-11-12. The machine and its proofs (S1); non-interference (S2); the reference model and the conformance vectors (S3). Complete as a specification.
+Status: accepted 2026-11-12. The machine and its proofs (S1); non-interference (S2); the reference model and the conformance vectors (S3). Complete as a specification. S4: the wire, JSON both ways, for an interpreter and the vectors (`VbmOrchestratorWire`, a binding).
 
 ## What it is
 
