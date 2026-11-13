@@ -33,7 +33,7 @@ The task cycle as a pure state machine, written once in Lean 4 and machine-check
 **Scope.** Pure data and total functions over `Init` and the vocabulary package `VbmWork`. No input or output, no clock, no model call, no network, no storage. What is proved is what any interpreter that meets the ports' laws may rely on; the ports' implementations are the application's.
 
 ## Status
-Slices (docs/decisions/0001-vbm-orchestrator.md): S1: the data, the machine and its proofs (reports once, cleans once, lands only done, the worker runs at most `fuse` times). S2: non-interference (control never reads prose). Planned: the reference model and the conformance vectors.
+Slices (docs/decisions/0001-vbm-orchestrator.md): S1: the data, the machine and its proofs (reports once, cleans once, lands only done, the worker runs at most `fuse` times). S2: non-interference (control never reads prose). S3: the reference model and the conformance vectors (`docs/vectors.md`): the specification is complete. Next is the interpreter, in the application that binds it.
 
 ## Hard rules
 - **Forbidden anywhere in Lean:** `sorry`, `admit`, `axiom`, `unsafe`, `implemented_by`, `csimp` (Tier 1 scans for them; a comment may mention one only on a line marked `tier1-allow`). A proof is hard? Decompose it; never weaken the statement.

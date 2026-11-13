@@ -1,5 +1,7 @@
 import VbmOrchestratorProofs.Safety
 import VbmOrchestratorProofs.Shape
+import VbmOrchestratorProofs.Model
+import VbmOrchestratorProofs.Model
 import VbmOrchestratorProofs.Witnesses
 import LandLedger
 /-! # The obligation ledger
@@ -22,4 +24,8 @@ def ledger : List Obligation := [
   O "the-worker-runs-at-most-fuse-times" (.proved [``VbmOrchestrator.start_inv, ``VbmOrchestrator.step_inv, ``VbmOrchestrator.runs_le_fuse,
     ``VbmOrchestrator.rounds_le_fuse]),
   O "control-never-depends-on-prose" (.proved [``VbmOrchestrator.step_rel, ``VbmOrchestrator.run_rel, ``VbmOrchestrator.start_rel, ``VbmOrchestrator.no_prose]),
-  O "the-ports-meet-their-laws" (.limit "the workspace, the agent, the lander's two steps, the reviewers and the judge are bindings of the application; that they meet the laws the machine relies on (a round costs at least a picodollar, a push takes only a validated commit, an undecodable reviewer reply is reported as such) is carried by the conformance vectors and the application's own tests, not provable here")]
+  O "the-reference-model-is-the-machine-under-the-port-discipline" (.proved [``VbmOrchestrator.drive_run]),
+  O "every-conformance-scenario-obeys-the-port-discipline" (.proved [``VbmOrchestrator.scenarios_obey_the_discipline]),
+  O "the-reference-model-is-the-machine-under-the-port-discipline" (.proved [``VbmOrchestrator.drive_run]),
+  O "every-conformance-scenario-obeys-the-port-discipline" (.proved [``VbmOrchestrator.scenarios_obey_the_discipline]),
+  O "the-ports-meet-their-laws" (.limit "the workspace, the agent, the lander's two steps, the reviewers and the judge are bindings of the application; that they meet the laws the machine relies on (a round costs at least a picodollar, a push takes only a validated commit, an undecodable reviewer reply is reported as such) is carried by the conformance vectors (vectors/vbm-orchestrator-vectors-1.jsonl, which an interpreter's own tests run) and the application's own tests, not provable here")]

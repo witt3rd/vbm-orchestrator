@@ -2,5 +2,6 @@ import VbmOrchestratorProofs.Machine
 import VbmOrchestratorProofs.Run
 import VbmOrchestratorProofs.Safety
 import VbmOrchestratorProofs.Shape
+import VbmOrchestratorProofs.Model
 import VbmOrchestratorProofs.Witnesses
 import VbmOrchestratorProofs.Ledger

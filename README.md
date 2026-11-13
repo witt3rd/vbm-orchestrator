@@ -6,7 +6,7 @@
 
 ## What it is, and what it is not
 
-A specification, its proofs, and (next) a reference model and conformance vectors. `step : Config → State → Event → State × List Action` is total and pure: it has no input or output, no clock, no model and no storage. An interpreter turns each action into a call of a port (the workspace, the agent, the lander, the reviewers, the judge) and each answer into the next event. It depends on [vbm-work](https://github.com/witt3rd/vbm-work) for the words it shares (the task, the typed outcome, the review verdict) and on nothing else.
+A specification, its proofs, a reference model (the machine driven under the port discipline) and conformance vectors (`vectors/`, format in `docs/vectors.md`): language-neutral scenarios that any interpreter runs in its own tests. `step : Config → State → Event → State × List Action` is total and pure: it has no input or output, no clock, no model and no storage. An interpreter turns each action into a call of a port (the workspace, the agent, the lander, the reviewers, the judge) and each answer into the next event. It depends on [vbm-work](https://github.com/witt3rd/vbm-work) for the words it shares (the task, the typed outcome, the review verdict) and on nothing else.
 
 ## Build and test
 

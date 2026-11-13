@@ -1,6 +1,6 @@
 # 0001: vbm-orchestrator: the task cycle as a pure state machine
 
-Status: accepted 2026-11-12. The machine and its first proofs (S1); non-interference, the reference model and the conformance vectors follow (S2).
+Status: accepted 2026-11-12. The machine and its proofs (S1); non-interference (S2); the reference model and the conformance vectors (S3). Complete as a specification.
 
 ## What it is
 
@@ -32,7 +32,10 @@ The witnesses (`VbmOrchestratorProofs/Witnesses.lean`, and the last example of `
 
 10. **Control never depends on prose (non-interference)**: two states and two events with the same typed shape (the same constructors, kinds of block, counts and numbers, whatever their texts) give results of the same shape; so two runs over events of the same shape ask for the same actions, up to their texts, and end in the same phase. The machine copies text, it never reads it.
 
-**Not yet:** the reference model and the conformance vectors.
+11. **The reference model is the machine under the port discipline**: `drive` computes exactly what `run` computes, and refuses a sequence of events that answers no pending action or that the machine would ignore.
+12. **Every conformance scenario obeys that discipline**, so each vector is a run a correct interpreter can meet.
+
+**The conformance vectors** (`vectors/vbm-orchestrator-vectors-1.jsonl`, 28 scenarios, format in `docs/vectors.md`) are generated from the machine and checked in; they are the checklist for the interpreter, the part that is not proved.
 
 ## What is not decided here
 

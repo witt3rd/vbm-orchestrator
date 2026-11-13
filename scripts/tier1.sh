@@ -42,7 +42,7 @@ scripts/lint-pipefail.sh   # a producer piped into an early-exiting consumer is 
 
 # 2. Build, zero warnings (scripts/check-zero-warning.sh: the warning's own diagnostic is required, a clean file must pass; prints `ran: zero-warning: 3 cases`).
 scripts/check-zero-warning.sh
-lake build VbmOrchestrator VbmOrchestratorProofs LandLedger   # once, for the gates and every test (they build nothing more)
+lake build VbmOrchestrator VbmOrchestratorProofs LandLedger vbm-orchestrator-vectors   # once, for the gates and every test (they build nothing more)
 
 # 2a. The axiom gate: every constant of ours depends only on propext, Classical.choice, Quot.sound (--selftest: a non-standard axiom is rejected).
 bg axiom-gate .land/tool/bin/land-lean axiom --selftest
@@ -51,6 +51,7 @@ bg axiom-gate .land/tool/bin/land-lean axiom --selftest
 .land/tool/bin/land-lean ledger --selftest   # the obligation ledger: docs/proof-ledger.md rendered, every theorem checked, the ratchet (vbm-land docs/lean-gates.md)
 # 2d. The public-readiness lint: no private name, no path of ours, anywhere in the tree; it is shown able to fail.
 par scripts/test_lint_public.sh
+par scripts/test_vectors.sh
 # 2e. The test-running runtime (ran-evidence, the parallel runner) is the vendored tool's and is tested in vbm-land. Every concurrent gate must say how its count is read: a `bg NAME` of this script has a line in
 # scripts/ran-gates.txt, or prints its own `ran: NAME: N cases` (the tests job does).
 for g in $(sed -nE 's/^bg ([A-Za-z0-9_-]+) .*/\1/p' scripts/tier1.sh); do
