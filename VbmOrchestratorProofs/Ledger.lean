@@ -18,7 +18,7 @@ def ledger : List Obligation := [
     ``VbmOrchestrator.step_cleanups, ``VbmOrchestrator.step_finished_stays, ``VbmOrchestrator.cleanups_le_one, ``VbmOrchestrator.cleanups_exact]),
   O "a-push-needs-a-validated-commit-and-reviews-that-cleared-it" (.proved [``VbmOrchestrator.push_origin]),
   O "a-task-lands-only-a-done-type-outcome" (.proved [``VbmOrchestrator.step_wf, ``VbmOrchestrator.start_wf, ``VbmOrchestrator.landed_report_is_done]),
-  O "the-worker-runs-again-only-after-the-judge-says-progressing" (.proved [``VbmOrchestrator.first_run_origin, ``VbmOrchestrator.resume_origin]),
+  O "the-worker-runs-again-only-after-the-judge-says-progressing-or-on-the-first-failure" (.proved [``VbmOrchestrator.first_run_origin, ``VbmOrchestrator.resume_origin, ``VbmOrchestrator.first_failure_resumes, ``VbmOrchestrator.later_failure_asks]),
   O "an-unreachable-reviewer-never-lets-a-task-land-or-repair" (.proved [``VbmOrchestrator.unreviewed_closes]),
   O "the-deadline-and-a-lost-lease-always-close-a-task" (.proved [``VbmOrchestrator.deadline_closes, ``VbmOrchestrator.lease_lost_closes]),
   O "the-worker-runs-at-most-fuse-times" (.proved [``VbmOrchestrator.start_inv, ``VbmOrchestrator.step_inv, ``VbmOrchestrator.runs_le_fuse,

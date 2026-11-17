@@ -27,14 +27,14 @@ def scenarios : List Scenario := [
   ⟨"success-one-reviewer-clean", cfgR, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .reviewed [okR []], .pushed (.landed "sha1"), .cleaned]⟩,
   ⟨"success-two-reviewers-notes-only", cfgRR, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .reviewed [okR [note1], okR []], .pushed (.landed "sha1"), .cleaned]⟩,
   ⟨"success-done-with-assumptions", cfg0, [.preparedOk, .agentFinished (.doneWithAssumptions ["the base is green"] []) (some "c1") 3, .validated (.passed "r1"), .pushed (.landed "sha1"), .cleaned]⟩,
-  ⟨"repair-after-red-checks", cfg0, [.preparedOk, work "c1" 3, .validated (.failed "red: 2 tests failed"), .judged .progressing, work "c2" 2, .validated (.passed "r2"), .pushed (.landed "sha2"), .cleaned]⟩,
-  ⟨"repair-after-conflict", cfg0, [.preparedOk, work "c1" 3, .validated (.conflict "x.txt conflicts with main"), .judged .progressing, work "c2" 2, .validated (.passed "r2"), .pushed (.landed "sha2"), .cleaned]⟩,
-  ⟨"repair-after-reviewer-fix", cfgR, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .reviewed [okR [fix1]], .judged .progressing, work "c2" 2, .validated (.passed "r2"), .reviewed [okR []], .pushed (.landed "sha2"), .cleaned]⟩,
-  ⟨"two-repairs-then-lands", cfg0, [.preparedOk, work "c1" 2, .validated (.failed "red one"), .judged .progressing, work "c2" 2, .validated (.failed "red two"), .judged .progressing, work "c3" 2, .validated (.passed "r3"), .pushed (.landed "sha3"), .cleaned]⟩,
-  ⟨"judge-stuck-closes-as-checks-failed", cfg0, [.preparedOk, work "c1" 3, .validated (.failed "red: 2 tests failed"), .judged .stuck, .cleaned]⟩,
-  ⟨"judge-unavailable-fails-closed", cfg0, [.preparedOk, work "c1" 3, .validated (.failed "red: 2 tests failed"), .judged .unavailable, .cleaned]⟩,
-  ⟨"judge-stuck-on-conflict", cfg0, [.preparedOk, work "c1" 3, .validated (.conflict "x.txt"), .judged .stuck, .cleaned]⟩,
-  ⟨"judge-stuck-on-findings", cfgR, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .reviewed [okR [fix1]], .judged .stuck, .cleaned]⟩,
+  ⟨"repair-after-red-checks", cfg0, [.preparedOk, work "c1" 3, .validated (.failed "red: 2 tests failed"), work "c2" 2, .validated (.passed "r2"), .pushed (.landed "sha2"), .cleaned]⟩,
+  ⟨"repair-after-conflict", cfg0, [.preparedOk, work "c1" 3, .validated (.conflict "x.txt conflicts with main"), work "c2" 2, .validated (.passed "r2"), .pushed (.landed "sha2"), .cleaned]⟩,
+  ⟨"repair-after-reviewer-fix", cfgR, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .reviewed [okR [fix1]], work "c2" 2, .validated (.passed "r2"), .reviewed [okR []], .pushed (.landed "sha2"), .cleaned]⟩,
+  ⟨"two-repairs-then-lands", cfg0, [.preparedOk, work "c1" 2, .validated (.failed "red one"), work "c2" 2, .validated (.failed "red two"), .judged .progressing, work "c3" 2, .validated (.passed "r3"), .pushed (.landed "sha3"), .cleaned]⟩,
+  ⟨"judge-stuck-closes-as-checks-failed", cfg0, [.preparedOk, work "c1" 3, .validated (.failed "red: 2 tests failed"), work "c2" 2, .validated (.failed "red: 2 tests failed"), .judged .stuck, .cleaned]⟩,
+  ⟨"judge-unavailable-fails-closed", cfg0, [.preparedOk, work "c1" 3, .validated (.failed "red: 2 tests failed"), work "c2" 2, .validated (.failed "red: 2 tests failed"), .judged .unavailable, .cleaned]⟩,
+  ⟨"judge-stuck-on-conflict", cfg0, [.preparedOk, work "c1" 3, .validated (.conflict "x.txt"), work "c2" 2, .validated (.conflict "x.txt"), .judged .stuck, .cleaned]⟩,
+  ⟨"judge-stuck-on-findings", cfgR, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .reviewed [okR [fix1]], work "c2" 2, .validated (.passed "r2"), .reviewed [okR [fix1]], .judged .stuck, .cleaned]⟩,
   ⟨"unreachable-reviewer", cfgR, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .reviewed [noReply], .cleaned]⟩,
   ⟨"one-reviewer-unreachable-other-found-a-fix", cfgRR, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .reviewed [okR [fix1], noReply], .cleaned]⟩,
   ⟨"worker-blocked-passes-through", cfg0, [.preparedOk, .agentFinished (.blocked .readOnlyPath "the path is read-only" []) none 2, .cleaned]⟩,
@@ -43,7 +43,7 @@ def scenarios : List Scenario := [
   ⟨"validation-unavailable", cfg0, [.preparedOk, work "c1" 3, .validated (.unavailable "landing is held: the owner asked to stop"), .cleaned]⟩,
   ⟨"validation-refused", cfg0, [.preparedOk, work "c1" 3, .validated (.refused "the post-rebase hook refused this change"), .cleaned]⟩,
   ⟨"fuse-at-the-first-round", ⟨5, []⟩, [.preparedOk, work "c1" 7, .cleaned]⟩,
-  ⟨"fuse-inside-a-repair", cfg0, [.preparedOk, work "c1" 6, .validated (.failed "red"), .judged .progressing, work "c2" 5, .cleaned]⟩,
+  ⟨"fuse-inside-a-repair", cfg0, [.preparedOk, work "c1" 6, .validated (.failed "red"), work "c2" 5, .cleaned]⟩,
   ⟨"deadline-while-working", cfg0, [.preparedOk, .deadline, .cleaned]⟩,
   ⟨"deadline-while-reviewing", cfgR, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .deadline, .cleaned]⟩,
   ⟨"lease-lost-while-reviewing-reports-nothing", cfgR, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .leaseLost, .cleaned]⟩,
@@ -52,7 +52,7 @@ def scenarios : List Scenario := [
   ⟨"push-refused-by-the-remote", cfg0, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .pushed (.refused "protected branch"), .cleaned]⟩,
   ⟨"validation-moved-twice-then-lands", cfg0, [.preparedOk, work "c1" 3, .validated .moved, .validated .moved, .validated (.passed "r1"), .pushed (.landed "sha1"), .cleaned]⟩,
   ⟨"base-moved-twice-then-lands", cfg0, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .pushed .baseMoved, .validated (.passed "r2"), .pushed .baseMoved, .validated (.passed "r3"), .pushed (.landed "sha3"), .cleaned]⟩,
-  ⟨"base-moved-then-the-checks-fail-and-are-repaired", cfg0, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .pushed .baseMoved, .validated (.failed "red on the new base"), .judged .progressing, work "c2" 2, .validated (.passed "r2"), .pushed (.landed "sha2"), .cleaned]⟩
+  ⟨"base-moved-then-the-checks-fail-and-are-repaired", cfg0, [.preparedOk, work "c1" 3, .validated (.passed "r1"), .pushed .baseMoved, .validated (.failed "red on the new base"), work "c2" 2, .validated (.passed "r2"), .pushed (.landed "sha2"), .cleaned]⟩
 ]
 
 end VbmOrchestrator

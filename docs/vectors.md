@@ -25,7 +25,7 @@ Every action asks one port; the event that follows answers it:
 |---|---|---|
 | `prepare` | the workspace | `preparedOk` or `preparedFailed` |
 | `runAgent` (round, `first` or `resume` with the whole feedback) | the worker agent | `agentFinished` (its typed outcome, the commit it made or null, the cost) |
-| `askJudge` | the decision model | `judged` (`progressing`, `stuck` or `unavailable`) |
+| `askJudge` | the decision model | `judged` (`progressing`, `stuck` or `unavailable`); asked from the SECOND failure on: the first round's failure resumes the worker at once, with no Judge (one failed attempt is feedback, not a verdict) |
 | `validate` | the lander's validate step | `validated` (`passed` with the rebased commit, `failed`, `conflict`, `refused` with the lander's own words (the task closes `blocked(runFailed)` carrying them: the exit code alone cannot say which refusal it was), `moved` (the base outran the lander: validate again), or `unavailable` with the reason: the lander could not validate for a reason that is not the task's) |
 | `review` | the reviewers (read-only, given the diff up front) | `reviewed` (one answer per reviewer: its findings, or undecodable) |
 | `push` | the lander's push step | `pushed` (`landed` with the sha, `baseMoved`, `refused`) |

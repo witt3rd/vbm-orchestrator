@@ -22,6 +22,12 @@ def resumeOrFuse (cfg : Config) (s : State) (r : Nat) (fb : Feedback) : State ×
 def ask (s : State) (r : Nat) (fb : Feedback) : State × List Action :=
   ({ s with phase := .judging r fb }, [.askJudge r fb s.spent])
 
+/-- **What a failure of round `r` becomes.** The FIRST round's failure is feedback, not a verdict: one failed attempt is one data point and cannot show that the rounds are not converging, so the worker is
+resumed at once with the whole feedback (the money ceiling still applies: `resumeOrFuse`). From the second failure on the Judge is asked, as before. (Measured on the pool, 2026-11-17: asked after the
+first failure the Judge answered 12% to 22% "converging" every time, which closed the task; the changes were a forbidden word and a stale ledger citation, each a minute's repair.) -/
+def feedback (cfg : Config) (s : State) (r : Nat) (fb : Feedback) : State × List Action :=
+  if r = 1 then resumeOrFuse cfg s r fb else ask s r fb
+
 /-- The workspace answered: start the worker, unless there is no money at all. -/
 def onPrepared (cfg : Config) (s : State) : State × List Action :=
   match decide (cfg.fuse ≤ s.spent) with
@@ -45,18 +51,18 @@ def onValidated (cfg : Config) (s : State) (r : Nat) (d : Delivery) (v : Validat
   match v, cfg.reviewers.isEmpty with
   | .passed c, true => ({ s with phase := .pushing r d c }, [.push c])
   | .passed c, false => ({ s with phase := .reviewing r d c }, [.review c])
-  | .failed rep, _ => ask s r (.checks rep)
-  | .conflict rep, _ => ask s r (.conflict rep)
+  | .failed rep, _ => feedback cfg s r (.checks rep)
+  | .conflict rep, _ => feedback cfg s r (.conflict rep)
   | .moved, _ => ({ s with phase := .validating r d }, [.validate d.commit])
   | .refused w, _ => close s (some (blockedOut .runFailed (orElse w "the lander refused the change")))
   | .unavailable why, _ => close s (some (blockedOut .runFailed (orElse why "the lander could not validate")))
 
 /-- Every reviewer answered. -/
-def onReviewed (s : State) (r : Nat) (d : Delivery) (c : String) (answers : List ReviewAnswer) : State × List Action :=
+def onReviewed (cfg : Config) (s : State) (r : Nat) (d : Delivery) (c : String) (answers : List ReviewAnswer) : State × List Action :=
   match answers.any answerFailed, answers.flatMap answerFixes with
   | true, _ => close s (some (blockedOut .unableToReview "a reviewer could not be reached or its reply did not decode"))
   | false, [] => ({ s with phase := .pushing r d c }, [.push c])
-  | false, fixes => ask s r (.findings fixes)
+  | false, fixes => feedback cfg s r (.findings fixes)
 
 /-- The Judge answered whether the task is converging. -/
 def onJudged (cfg : Config) (s : State) (r : Nat) (fb : Feedback) (a : JudgeAnswer) : State × List Action :=
@@ -85,7 +91,7 @@ def step (cfg : Config) (s : State) (e : Event) : State × List Action :=
       close s (some (blockedOut .runFailed (orElse w "the workspace could not be prepared")))
   | .working r, .agentFinished o commit cost => onWork cfg s r o commit cost
   | .validating r d, .validated v => onValidated cfg s r d v
-  | .reviewing r d c, .reviewed answers => onReviewed s r d c answers
+  | .reviewing r d c, .reviewed answers => onReviewed cfg s r d c answers
   | .judging r fb, .judged a => onJudged cfg s r fb a
   | .pushing r d _, .pushed p => onPushed s r d p
   | _, _ => (s, [])

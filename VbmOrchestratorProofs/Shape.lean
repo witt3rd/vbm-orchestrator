@@ -246,7 +246,7 @@ theorem step_rel (cfg : Config) (s t : State) (e e' : Event) (hs : StateRel s t)
   have hp0 := hp
   cases hp <;> cases he <;>
     (try (have h1 := any_failed_rel ‹Lrel ARel _ _›; have h2 := fixes_empty_rel ‹Lrel ARel _ _›)) <;>
-    simp_all [step, onPrepared, onWork, onValidated, onReviewed, onJudged, onPushed, close, ask, resumeOrFuse, blockedOut, Feedback.kind] <;>
+    simp_all [step, onPrepared, onWork, onValidated, onReviewed, onJudged, onPushed, close, ask, feedback, resumeOrFuse, blockedOut, Feedback.kind] <;>
     (repeat' split) <;> (try simp_all) <;> (try grind)
 
 end VbmOrchestrator

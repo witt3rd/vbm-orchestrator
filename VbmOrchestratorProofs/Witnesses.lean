@@ -15,19 +15,27 @@ example : run noReviewers start.1
     ({ phase := .closed, spent := 3 },
      [.runAgent 1 .first, .validate "c1", .push "r1", .cleanup, .report (.done []) (some "sha")]) := by decide
 
-/-- A failed check, the Judge says `progressing`: the same session continues, in round 2, with the whole report. -/
+/-- A failed check in the FIRST round is feedback, not a verdict: no Judge is asked, the same session continues at once, in round 2, with the whole report. -/
 example : (run noReviewers start.1
-    [.preparedOk, .agentFinished (.done []) (some "c1") 3, .validated (.failed "red: 2 tests"), .judged .progressing]).2 =
-    [.runAgent 1 .first, .validate "c1", .askJudge 1 (.checks "red: 2 tests") 3, .runAgent 2 (.resume (.checks "red: 2 tests"))] := by decide
+    [.preparedOk, .agentFinished (.done []) (some "c1") 3, .validated (.failed "red: 2 tests")]).2 =
+    [.runAgent 1 .first, .validate "c1", .runAgent 2 (.resume (.checks "red: 2 tests"))] := by decide
 
-/-- The Judge says `stuck`: the task closes as the kind of its last failure, with the failure whole. -/
+/-- A failed check in the SECOND round asks the Judge; `progressing`: the same session continues, in round 3, with the whole report. -/
 example : (run noReviewers start.1
-    [.preparedOk, .agentFinished (.done []) (some "c1") 3, .validated (.failed "red: 2 tests"), .judged .stuck, .cleaned]).2 =
-    [.runAgent 1 .first, .validate "c1", .askJudge 1 (.checks "red: 2 tests") 3, .cleanup,
+    [.preparedOk, .agentFinished (.done []) (some "c1") 3, .validated (.failed "red: 2 tests"), .agentFinished (.done []) (some "c2") 3,
+     .validated (.failed "red: 1 test"), .judged .progressing]).2 =
+    [.runAgent 1 .first, .validate "c1", .runAgent 2 (.resume (.checks "red: 2 tests")), .validate "c2", .askJudge 2 (.checks "red: 1 test") 6,
+     .runAgent 3 (.resume (.checks "red: 1 test"))] := by decide
+
+/-- The Judge says `stuck` after the second failure: the task closes as the kind of its last failure, with the failure whole. -/
+example : (run noReviewers start.1
+    [.preparedOk, .agentFinished (.done []) (some "c1") 3, .validated (.failed "red: 2 tests"), .agentFinished (.done []) (some "c2") 3,
+     .validated (.failed "red: 2 tests"), .judged .stuck, .cleaned]).2 =
+    [.runAgent 1 .first, .validate "c1", .runAgent 2 (.resume (.checks "red: 2 tests")), .validate "c2", .askJudge 2 (.checks "red: 2 tests") 6, .cleanup,
      .report (.blocked .checksFailed "red: 2 tests" []) none] := by decide
 
 /-- A judge that cannot be reached is read as `stuck`: the decision fails closed. -/
-example : (step noReviewers { phase := .judging 1 (.checks "red"), spent := 3 } (.judged .unavailable)).1.phase =
+example : (step noReviewers { phase := .judging 2 (.checks "red"), spent := 3 } (.judged .unavailable)).1.phase =
     .closing (some (.blocked .checksFailed "red" [])) none := by decide
 
 /-- The money ceiling: a round that reaches the fuse closes the task, whatever the worker said. -/

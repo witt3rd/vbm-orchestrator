@@ -25,7 +25,7 @@ substitute the result. -/
 macro "step_split " hs:ident : tactic =>
   `(tactic| (unfold step at $hs:ident
              split at $hs:ident
-             all_goals (try simp only [onPrepared, onWork, onValidated, onReviewed, onJudged, onPushed, close, ask, resumeOrFuse] at $hs:ident)
+             all_goals (try simp only [onPrepared, onWork, onValidated, onReviewed, onJudged, onPushed, close, ask, resumeOrFuse, feedback] at $hs:ident)
              all_goals (repeat' (split at $hs:ident))
              all_goals (try simp only [Prod.mk.injEq] at $hs:ident)
              all_goals (try (obtain ⟨hs1, hs2⟩ := $hs:ident; subst hs1; subst hs2))))
@@ -76,13 +76,30 @@ theorem first_run_origin (cfg : Config) (s s' : State) (e : Event) (acts : List 
   step_cases hs
   all_goals (try omega)
 
-/-- **The worker runs again, in the same session, with the whole feedback, only after the Judge said `progressing` and while the money is below the fuse.** The round
-is the failed round plus one. -/
+/-- **A failure of the FIRST round**: the phase is the first round's validation or review, and the event is the failure that phase can answer with, whose feedback is `fb`. -/
+def FirstFailure (p : Phase) (e : Event) (fb : Feedback) : Prop :=
+  (∃ d rep, p = .validating 1 d ∧ ((e = .validated (.failed rep) ∧ fb = .checks rep) ∨ (e = .validated (.conflict rep) ∧ fb = .conflict rep))) ∨
+  (∃ d c answers, p = .reviewing 1 d c ∧ e = .reviewed answers ∧ answers.any answerFailed = false ∧ answers.flatMap answerFixes ≠ [] ∧ fb = .findings (answers.flatMap answerFixes))
+
+/-- **The worker runs again, in the same session, with the whole feedback, only after the Judge said `progressing`, or on the failure of the first round (feedback, not a verdict:
+one failed attempt cannot show the rounds are not converging), and in both cases only while the money is below the fuse.** The round is the failed round plus one. -/
 theorem resume_origin (cfg : Config) (s s' : State) (e : Event) (acts : List Action) (r : Nat) (fb : Feedback)
     (hs : step cfg s e = (s', acts)) (h : Action.runAgent r (.resume fb) ∈ acts) :
-    ∃ q, r = q + 1 ∧ s.phase = .judging q fb ∧ e = .judged .progressing ∧ s.spent < cfg.fuse := by
+    ∃ q, r = q + 1 ∧ ((s.phase = .judging q fb ∧ e = .judged .progressing) ∨ (q = 1 ∧ FirstFailure s.phase e fb)) ∧ s.spent < cfg.fuse := by
   step_cases hs
   all_goals (try omega)
+  all_goals (try (simp [FirstFailure]; done))
+  all_goals (try (unfold FirstFailure; refine Or.inr ⟨_, _, _, rfl, rfl, ?_, ?_, rfl⟩ <;> simp_all [List.flatMap_eq_nil_iff]; done))
+
+/-- **The FIRST round's failed checks resume the worker at once**, with no Judge: the same session, round 2, the whole report, while the money is below the fuse. -/
+theorem first_failure_resumes (cfg : Config) (s : State) (d : Delivery) (rep : String) (hp : s.phase = .validating 1 d) (hm : s.spent < cfg.fuse) :
+    step cfg s (.validated (.failed rep)) = ({ s with phase := .working 2 }, [.runAgent 2 (.resume (.checks rep))]) := by
+  simp [step, hp, onValidated, feedback, resumeOrFuse, Nat.not_le.mpr hm]
+
+/-- **A failure after the first round asks the Judge** (the facts the Judge reads are the failure, the round and the money so far). -/
+theorem later_failure_asks (cfg : Config) (s : State) (r : Nat) (d : Delivery) (rep : String) (hp : s.phase = .validating r d) (hr : r ≠ 1) :
+    step cfg s (.validated (.failed rep)) = ({ s with phase := .judging r (.checks rep) }, [.askJudge r (.checks rep) s.spent]) := by
+  simp [step, hp, onValidated, feedback, hr, ask]
 
 /-- **An unreachable reviewer never lets the task land or repair**: the task closes as `unableToReview` and asks for nothing but the cleanup. -/
 theorem unreviewed_closes (cfg : Config) (s : State) (r : Nat) (d : Delivery) (c : String) (answers : List ReviewAnswer)
