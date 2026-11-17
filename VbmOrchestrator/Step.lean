@@ -48,7 +48,7 @@ def onValidated (cfg : Config) (s : State) (r : Nat) (d : Delivery) (v : Validat
   | .failed rep, _ => ask s r (.checks rep)
   | .conflict rep, _ => ask s r (.conflict rep)
   | .moved, _ => ({ s with phase := .validating r d }, [.validate d.commit])
-  | .refused, _ => close s (some (blockedOut .protectedPath "the change touches a path the lander protects"))
+  | .refused w, _ => close s (some (blockedOut .runFailed (orElse w "the lander refused the change")))
   | .unavailable why, _ => close s (some (blockedOut .runFailed (orElse why "the lander could not validate")))
 
 /-- Every reviewer answered. -/

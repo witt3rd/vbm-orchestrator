@@ -69,7 +69,7 @@ inductive VRel : ValidateResult → ValidateResult → Prop
   | passed (c c' : String) : VRel (.passed c) (.passed c')
   | failed (r r' : String) : VRel (.failed r) (.failed r')
   | conflict (r r' : String) : VRel (.conflict r) (.conflict r')
-  | refused : VRel .refused .refused
+  | refused (w w' : String) : VRel (.refused w) (.refused w')
   | moved : VRel .moved .moved
   | unavailable (w w' : String) : VRel (.unavailable w) (.unavailable w')
 
@@ -172,30 +172,30 @@ theorem delRel_mk {c c' : String} {o o' : Outcome} : DelRel ⟨c, o⟩ ⟨c', o'
 @[simp] theorem vRel_moved_failed (ys : String) : ¬ VRel ValidateResult.moved (ValidateResult.failed ys) := by intro h; cases h
 @[simp] theorem vRel_conflict_moved (xs : String) : ¬ VRel (ValidateResult.conflict xs) ValidateResult.moved := by intro h; cases h
 @[simp] theorem vRel_moved_conflict (ys : String) : ¬ VRel ValidateResult.moved (ValidateResult.conflict ys) := by intro h; cases h
-@[simp] theorem vRel_refused_moved  : ¬ VRel ValidateResult.refused ValidateResult.moved := by intro h; cases h
-@[simp] theorem vRel_moved_refused  : ¬ VRel ValidateResult.moved ValidateResult.refused := by intro h; cases h
+@[simp] theorem vRel_refused_moved  (zs : String) : ¬ VRel (ValidateResult.refused zs) ValidateResult.moved := by intro h; cases h
+@[simp] theorem vRel_moved_refused  (zs : String) : ¬ VRel ValidateResult.moved (ValidateResult.refused zs) := by intro h; cases h
 @[simp] theorem vRel_unavailable_moved (xs : String) : ¬ VRel (ValidateResult.unavailable xs) ValidateResult.moved := by intro h; cases h
 @[simp] theorem vRel_moved_unavailable (ys : String) : ¬ VRel ValidateResult.moved (ValidateResult.unavailable ys) := by intro h; cases h
 @[simp] theorem vRel_passed_unavailable (xs : String) (ys : String) : ¬ VRel (ValidateResult.passed xs) (ValidateResult.unavailable ys) := by intro h; cases h
 @[simp] theorem vRel_failed_unavailable (xs : String) (ys : String) : ¬ VRel (ValidateResult.failed xs) (ValidateResult.unavailable ys) := by intro h; cases h
 @[simp] theorem vRel_conflict_unavailable (xs : String) (ys : String) : ¬ VRel (ValidateResult.conflict xs) (ValidateResult.unavailable ys) := by intro h; cases h
-@[simp] theorem vRel_refused_unavailable  (ys : String) : ¬ VRel ValidateResult.refused (ValidateResult.unavailable ys) := by intro h; cases h
+@[simp] theorem vRel_refused_unavailable  (ys : String) (zs : String) : ¬ VRel (ValidateResult.refused zs) (ValidateResult.unavailable ys) := by intro h; cases h
 @[simp] theorem vRel_unavailable_passed (xs : String) (ys : String) : ¬ VRel (ValidateResult.unavailable xs) (ValidateResult.passed ys) := by intro h; cases h
 @[simp] theorem vRel_unavailable_failed (xs : String) (ys : String) : ¬ VRel (ValidateResult.unavailable xs) (ValidateResult.failed ys) := by intro h; cases h
 @[simp] theorem vRel_unavailable_conflict (xs : String) (ys : String) : ¬ VRel (ValidateResult.unavailable xs) (ValidateResult.conflict ys) := by intro h; cases h
-@[simp] theorem vRel_unavailable_refused (xs : String)  : ¬ VRel (ValidateResult.unavailable xs) ValidateResult.refused := by intro h; cases h
+@[simp] theorem vRel_unavailable_refused (xs : String)  (zs : String) : ¬ VRel (ValidateResult.unavailable xs) (ValidateResult.refused zs) := by intro h; cases h
 @[simp] theorem vRel_passed_failed (xs : String) (ys : String) : ¬ VRel (ValidateResult.passed xs) (ValidateResult.failed ys) := by intro h; cases h
 @[simp] theorem vRel_passed_conflict (xs : String) (ys : String) : ¬ VRel (ValidateResult.passed xs) (ValidateResult.conflict ys) := by intro h; cases h
-@[simp] theorem vRel_passed_refused (xs : String)  : ¬ VRel (ValidateResult.passed xs) ValidateResult.refused := by intro h; cases h
+@[simp] theorem vRel_passed_refused (xs : String)  (zs : String) : ¬ VRel (ValidateResult.passed xs) (ValidateResult.refused zs) := by intro h; cases h
 @[simp] theorem vRel_failed_passed (xs : String) (ys : String) : ¬ VRel (ValidateResult.failed xs) (ValidateResult.passed ys) := by intro h; cases h
 @[simp] theorem vRel_failed_conflict (xs : String) (ys : String) : ¬ VRel (ValidateResult.failed xs) (ValidateResult.conflict ys) := by intro h; cases h
-@[simp] theorem vRel_failed_refused (xs : String)  : ¬ VRel (ValidateResult.failed xs) ValidateResult.refused := by intro h; cases h
+@[simp] theorem vRel_failed_refused (xs : String)  (zs : String) : ¬ VRel (ValidateResult.failed xs) (ValidateResult.refused zs) := by intro h; cases h
 @[simp] theorem vRel_conflict_passed (xs : String) (ys : String) : ¬ VRel (ValidateResult.conflict xs) (ValidateResult.passed ys) := by intro h; cases h
 @[simp] theorem vRel_conflict_failed (xs : String) (ys : String) : ¬ VRel (ValidateResult.conflict xs) (ValidateResult.failed ys) := by intro h; cases h
-@[simp] theorem vRel_conflict_refused (xs : String)  : ¬ VRel (ValidateResult.conflict xs) ValidateResult.refused := by intro h; cases h
-@[simp] theorem vRel_refused_passed  (ys : String) : ¬ VRel ValidateResult.refused (ValidateResult.passed ys) := by intro h; cases h
-@[simp] theorem vRel_refused_failed  (ys : String) : ¬ VRel ValidateResult.refused (ValidateResult.failed ys) := by intro h; cases h
-@[simp] theorem vRel_refused_conflict  (ys : String) : ¬ VRel ValidateResult.refused (ValidateResult.conflict ys) := by intro h; cases h
+@[simp] theorem vRel_conflict_refused (xs : String)  (zs : String) : ¬ VRel (ValidateResult.conflict xs) (ValidateResult.refused zs) := by intro h; cases h
+@[simp] theorem vRel_refused_passed  (ys : String) (zs : String) : ¬ VRel (ValidateResult.refused zs) (ValidateResult.passed ys) := by intro h; cases h
+@[simp] theorem vRel_refused_failed  (ys : String) (zs : String) : ¬ VRel (ValidateResult.refused zs) (ValidateResult.failed ys) := by intro h; cases h
+@[simp] theorem vRel_refused_conflict  (ys : String) (zs : String) : ¬ VRel (ValidateResult.refused zs) (ValidateResult.conflict ys) := by intro h; cases h
 @[simp] theorem pRel_landed_baseMoved (xs : String)  : ¬ PRel (PushResult.landed xs) PushResult.baseMoved := by intro h; cases h
 @[simp] theorem pRel_landed_refused (xs : String) (ys : String) : ¬ PRel (PushResult.landed xs) (PushResult.refused ys) := by intro h; cases h
 @[simp] theorem pRel_baseMoved_landed  (ys : String) : ¬ PRel PushResult.baseMoved (PushResult.landed ys) := by intro h; cases h

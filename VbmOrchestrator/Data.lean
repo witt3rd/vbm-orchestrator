@@ -46,12 +46,13 @@ def Feedback.text : Feedback → String
   | .conflict r => orElse r "the change conflicts with the base"
   | .findings fs => orElse (renderFindings fs) "a reviewer found a defect"
 
-/-- What the lander's `validate` answers: the rebased commit it tested and found good, red checks, a conflict, a refusal (a protected path: never repairable), or that it could not validate at all. -/
+/-- What the lander's `validate` answers: the rebased commit it tested and found good, red checks, a conflict, a refusal, with the lander's own words (never repairable), or that it could not validate at all. -/
 inductive ValidateResult where
   | passed (commit : String)
   | failed (report : String)
   | conflict (report : String)
-  | refused
+  /-- The lander refused the change (a hook, the signers rule, a gate the lander owns): its OWN words, which the task's end carries. Never repairable: nothing in the change is wrong in a way the worker can fix. -/
+  | refused (words : String)
   /-- The base moved faster than the lander could validate (it ran out of attempts, nothing was judged wrong with the change): validate the SAME commit again. There is no cap: the deadline and the fuse are the stops. -/
   | moved
   /-- The lander could not validate, for a reason that is not the task's (landing is held, the base could not be fetched, a step timed out): the task closes as `runFailed` with the reason whole. -/

@@ -28,7 +28,7 @@ def validateJ : ValidateResult → Json
   | .passed c => Json.mkObj [("result", "passed"), ("commit", c)]
   | .failed r => Json.mkObj [("result", "failed"), ("report", r)]
   | .conflict r => Json.mkObj [("result", "conflict"), ("report", r)]
-  | .refused => Json.mkObj [("result", "refused")]
+  | .refused w => Json.mkObj [("result", "refused"), ("words", w)]
   | .moved => Json.mkObj [("result", "moved")]
   | .unavailable w => Json.mkObj [("result", "unavailable"), ("why", w)]
 def pushJ : PushResult → Json
@@ -117,7 +117,7 @@ def validateOf (j : Json) : Except String ValidateResult := do
   | "passed" => pure (.passed (← getStr j "commit"))
   | "failed" => pure (.failed (← getStr j "report"))
   | "conflict" => pure (.conflict (← getStr j "report"))
-  | "refused" => pure .refused
+  | "refused" => pure (.refused (← getStr j "words"))
   | "moved" => pure .moved
   | "unavailable" => pure (.unavailable (← getStr j "why"))
   | w => throw s!"{w} names no validation result"

@@ -41,7 +41,7 @@ def scenarios : List Scenario := [
   ⟨"worker-needs-clarification-passes-through", cfg0, [.preparedOk, .agentFinished (.needsClarification "which file?" "the first" []) none 1, .cleaned]⟩,
   ⟨"worker-done-but-nothing-changed", cfg0, [.preparedOk, .agentFinished done none 2, .cleaned]⟩,
   ⟨"validation-unavailable", cfg0, [.preparedOk, work "c1" 3, .validated (.unavailable "landing is held: the owner asked to stop"), .cleaned]⟩,
-  ⟨"validation-refused-protected-path", cfg0, [.preparedOk, work "c1" 3, .validated .refused, .cleaned]⟩,
+  ⟨"validation-refused", cfg0, [.preparedOk, work "c1" 3, .validated (.refused "the post-rebase hook refused this change"), .cleaned]⟩,
   ⟨"fuse-at-the-first-round", ⟨5, []⟩, [.preparedOk, work "c1" 7, .cleaned]⟩,
   ⟨"fuse-inside-a-repair", cfg0, [.preparedOk, work "c1" 6, .validated (.failed "red"), .judged .progressing, work "c2" 5, .cleaned]⟩,
   ⟨"deadline-while-working", cfg0, [.preparedOk, .deadline, .cleaned]⟩,
